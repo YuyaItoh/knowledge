@@ -52,20 +52,17 @@ public class WebhookLogic extends HttpLogic {
     	Map<String, Object> jsonObject = new HashMap<String, Object>();
 
     	/**  This code make JSON to send Slack */
-        String linktop = "<";
-        String linkpipe = "|";
-        String linkend = ">";
-        
-        /**  This code make JSON to send Slack */
-        StringBuffer SendBuff = new StringBuffer();
-        SendBuff.append(linktop);
-        SendBuff.append(NotifyLogic.get().makeURL(knowledge.getKnowledgeId()));
-        SendBuff.append(linkpipe);
-        SendBuff.append(knowledge.getTitle());
-        SendBuff.append(linkend);
-        String SendString = SendBuff.toString();
-        jsonObject.put("text", SendString);
-        
+        List<Map<String, Object>> attachments = new ArrayList<>();
+        Map<String, Object> attachment = new HashMap<String, Object>();
+        attachment.put("title", knowledge.getTitle());
+        attachment.put("title_link", NotifyLogic.get().makeURL(knowledge.getKnowledgeId()));
+        attachment.put("text", knowledge.getContent());
+        List<String> mrkdown = new ArrayList<>();
+        mrkdown.add("text");
+        attachment.put("mrkdwn_in", mrkdown);
+        attachments.add(attachment);
+        jsonObject.put("attachments", attachments);
+
         jsonObject.put("knowledge_id", knowledge.getKnowledgeId());
         jsonObject.put("title", knowledge.getTitle());
         jsonObject.put("content", knowledge.getContent());
@@ -97,16 +94,20 @@ public class WebhookLogic extends HttpLogic {
         UsersEntity insertUser = UsersDao.get().selectOnKey(knowledge.getInsertUser());
         if (insertUser != null) {
             jsonObject.put("insert_user", insertUser.getUserName());
+            jsonObject.put("text", "【" + insertUser.getUserName() + "】が記事を投稿");
         } else {
             jsonObject.put("insert_user", "Unknown user");
+            jsonObject.put("text", "Unknown Userが新規記事を作成*");
         }
         jsonObject.put("insert_date", simpleDateFormat.format(knowledge.getInsertDatetime()));
 
         UsersEntity updateUser = UsersDao.get().selectOnKey(knowledge.getInsertUser());
         if (updateUser != null) {
             jsonObject.put("update_user", updateUser.getUserName());
+            jsonObject.put("text", "【" + updateUser.getUserName() + "】が記事を投稿");
         } else {
-            jsonObject.put("insert_user", "Unknown user");
+            jsonObject.put("update_user", "Unknown user");
+            jsonObject.put("text", "Unknown Userが記事を更新");
         }
         jsonObject.put("update_date", simpleDateFormat.format(knowledge.getUpdateDatetime()));
 
@@ -140,20 +141,17 @@ public class WebhookLogic extends HttpLogic {
         Map<String, Object> jsonObject = new HashMap<String, Object>();
 
         /**  This code make JSON to send Slack */
-        String linktop = "<";
-        String linkpipe = "|";
-        String linkend = ">";
-        
-        /**  This code make JSON to send Slack */
-        StringBuffer SendBuff = new StringBuffer();
-        SendBuff.append(linktop);
-        SendBuff.append(NotifyLogic.get().makeURL(knowledge.getKnowledgeId()));
-        SendBuff.append(linkpipe);
-        SendBuff.append(knowledge.getTitle());
-        SendBuff.append(linkend);
-        String SendString = SendBuff.toString();
-        jsonObject.put("text", SendString);
-        
+        List<Map<String, Object>> attachments = new ArrayList<>();
+        Map<String, Object> attachment = new HashMap<String, Object>();
+        attachment.put("title", knowledge.getTitle());
+        attachment.put("title_link", NotifyLogic.get().makeURL(knowledge.getKnowledgeId()));
+        attachment.put("text", comment.getComment());
+        List<String> mrkdown = new ArrayList<>();
+        mrkdown.add("text");
+        attachment.put("mrkdwn_in", mrkdown);
+        attachments.add(attachment);
+        jsonObject.put("attachments", attachments);
+
         jsonObject.put("comment_no", comment.getCommentNo());
         jsonObject.put("comment", comment.getComment());
 
@@ -162,16 +160,20 @@ public class WebhookLogic extends HttpLogic {
         UsersEntity insertUser = UsersDao.get().selectOnKey(comment.getInsertUser());
         if (insertUser != null) {
             jsonObject.put("insert_user", insertUser.getUserName());
+            jsonObject.put("text", "【" + insertUser.getUserName() + "】がコメント");
         } else {
             jsonObject.put("insert_user", "Unknown user");
+            jsonObject.put("text", "Unknown Userがコメント");
         }
         jsonObject.put("insert_date", simpleDateFormat.format(comment.getInsertDatetime()));
 
         UsersEntity updateUser = UsersDao.get().selectOnKey(comment.getInsertUser());
         if (updateUser != null) {
             jsonObject.put("update_user", updateUser.getUserName());
+            jsonObject.put("text", "【" + updateUser.getUserName() + "】がコメント");
         } else {
             jsonObject.put("insert_user", "Unknown user");
+            jsonObject.put("text", "Unknown Userがコメント");
         }
         jsonObject.put("update_date", simpleDateFormat.format(knowledge.getUpdateDatetime()));
 
