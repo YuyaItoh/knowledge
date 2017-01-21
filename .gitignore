@@ -6,3 +6,5 @@ target
 .eclipse-pmd
 .checkstyle
 node
+node_modules
+app.log
