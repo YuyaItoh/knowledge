@@ -49,9 +49,9 @@ public class WebhookLogic extends HttpLogic {
      * @return
      */
     public Map<String, Object> getKnowledgeData(KnowledgesEntity knowledge, Integer type) {
-    	Map<String, Object> jsonObject = new HashMap<String, Object>();
+        Map<String, Object> jsonObject = new HashMap<String, Object>();
 
-    	/**  This code make JSON to send Slack */
+        /** This code make JSON to send Slack */
         List<Map<String, Object>> attachments = new ArrayList<>();
         Map<String, Object> attachment = new HashMap<String, Object>();
         attachment.put("title", knowledge.getTitle());
@@ -89,7 +89,7 @@ public class WebhookLogic extends HttpLogic {
         String insertUsername = (insertUser == null) ? "unknown user" : insertUser.getUserName();
         jsonObject.put("insert_user", insertUsername);
         jsonObject.put("insert_date", simpleDateFormat.format(knowledge.getInsertDatetime()));
- 
+
         // 更新ユーザ情報
         UsersEntity updateUser = UsersDao.get().selectOnKey(knowledge.getUpdateUser());
         String updateUsername = (updateUser == null) ? "unknown user" : updateUser.getUserName();
@@ -137,7 +137,7 @@ public class WebhookLogic extends HttpLogic {
     public Map<String, Object> getCommentData(CommentsEntity comment, KnowledgesEntity knowledge) {
         Map<String, Object> jsonObject = new HashMap<String, Object>();
 
-        /**  This code make JSON to send Slack */
+        /** This code make JSON to send Slack */
         List<Map<String, Object>> attachments = new ArrayList<>();
         Map<String, Object> attachment = new HashMap<String, Object>();
         attachment.put("title", knowledge.getTitle());
@@ -159,7 +159,7 @@ public class WebhookLogic extends HttpLogic {
         String insertUsername = (insertUser == null) ? "unknown user" : insertUser.getUserName();
         jsonObject.put("insert_user", insertUsername);
         jsonObject.put("insert_date", simpleDateFormat.format(knowledge.getInsertDatetime()));
- 
+
         // 更新ユーザ情報
         UsersEntity updateUser = UsersDao.get().selectOnKey(knowledge.getUpdateUser());
         String updateUsername = (updateUser == null) ? "unknown user" : updateUser.getUserName();
@@ -179,7 +179,8 @@ public class WebhookLogic extends HttpLogic {
      * @param json
      * @throws Exception
      */
-    public void notify(ProxyConfigsEntity proxyConfig, WebhookConfigsEntity webhookConfig, String json) throws Exception {
+    public void notify(ProxyConfigsEntity proxyConfig, WebhookConfigsEntity webhookConfig, String json)
+            throws Exception {
         URI uri = new URI(webhookConfig.getUrl());
 
         // HttpClient生成
@@ -228,6 +229,7 @@ public class WebhookLogic extends HttpLogic {
      */
     protected class HttpResponseHandler implements ResponseHandler<ResponseData> {
         URI uri;
+
         /**
          * @param url
          */
