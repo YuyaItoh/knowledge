@@ -71,7 +71,8 @@ public class WebhookLogic extends HttpLogic {
         jsonObject.put("comment_count", knowledge.getCommentCount());
         jsonObject.put("type_id", knowledge.getTypeId());
         jsonObject.put("link", NotifyLogic.get().makeURL(knowledge.getKnowledgeId()));
-        
+
+        // 非公開 → 公開
         boolean became_public = false;
         if (knowledge.getNotifyStatus() == null || knowledge.getNotifyStatus().intValue() == 0) {
             if (knowledge.getPublicFlag().intValue() != KnowledgeLogic.PUBLIC_FLAG_PRIVATE) {
@@ -81,35 +82,30 @@ public class WebhookLogic extends HttpLogic {
         }
         jsonObject.put("became_public", became_public);
 
+        // 作成ユーザ情報
+        UsersEntity insertUser = UsersDao.get().selectOnKey(knowledge.getInsertUser());
+        String insertUsername = (insertUser == null) ? "unknown user" : insertUser.getUserName();
+        jsonObject.put("insert_user", insertUsername);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        jsonObject.put("insert_date", simpleDateFormat.format(knowledge.getInsertDatetime()));
+ 
+        // 更新ユーザ情報
+        UsersEntity updateUser = UsersDao.get().selectOnKey(knowledge.getUpdateUser());
+        String updateUsername = (updateUser == null) ? "unknown user" : updateUser.getUserName();
+        jsonObject.put("update_user", updateUsername);
+        jsonObject.put("update_date", simpleDateFormat.format(knowledge.getUpdateDatetime()));
+
+        // ステータス（作成/更新）
         if (type != null) {
+            LOG.info("NotifyType = " + type);
             if (Notify.TYPE_KNOWLEDGE_INSERT == type) {
                 jsonObject.put("status", "created");
+                jsonObject.put("text", "【" + insertUsername + "】が記事を投稿");
             } else {
                 jsonObject.put("status", "updated");
+                jsonObject.put("text", "【" + updateUsername + "】が記事を更新");
             }
         }
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-
-        UsersEntity insertUser = UsersDao.get().selectOnKey(knowledge.getInsertUser());
-        if (insertUser != null) {
-            jsonObject.put("insert_user", insertUser.getUserName());
-            jsonObject.put("text", "【" + insertUser.getUserName() + "】が記事を投稿");
-        } else {
-            jsonObject.put("insert_user", "Unknown user");
-            jsonObject.put("text", "Unknown Userが新規記事を作成*");
-        }
-        jsonObject.put("insert_date", simpleDateFormat.format(knowledge.getInsertDatetime()));
-
-        UsersEntity updateUser = UsersDao.get().selectOnKey(knowledge.getInsertUser());
-        if (updateUser != null) {
-            jsonObject.put("update_user", updateUser.getUserName());
-            jsonObject.put("text", "【" + updateUser.getUserName() + "】が記事を投稿");
-        } else {
-            jsonObject.put("update_user", "Unknown user");
-            jsonObject.put("text", "Unknown Userが記事を更新");
-        }
-        jsonObject.put("update_date", simpleDateFormat.format(knowledge.getUpdateDatetime()));
 
         List<TagsEntity> tagsEntities = TagsDao.get().selectOnKnowledgeId(knowledge.getKnowledgeId());
         List<String> tags = new ArrayList<String>();
