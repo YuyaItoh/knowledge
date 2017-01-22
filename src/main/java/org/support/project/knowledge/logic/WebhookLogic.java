@@ -82,11 +82,12 @@ public class WebhookLogic extends HttpLogic {
         }
         jsonObject.put("became_public", became_public);
 
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+
         // 作成ユーザ情報
         UsersEntity insertUser = UsersDao.get().selectOnKey(knowledge.getInsertUser());
         String insertUsername = (insertUser == null) ? "unknown user" : insertUser.getUserName();
         jsonObject.put("insert_user", insertUsername);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         jsonObject.put("insert_date", simpleDateFormat.format(knowledge.getInsertDatetime()));
  
         // 更新ユーザ情報
@@ -100,10 +101,10 @@ public class WebhookLogic extends HttpLogic {
             LOG.info("NotifyType = " + type);
             if (Notify.TYPE_KNOWLEDGE_INSERT == type) {
                 jsonObject.put("status", "created");
-                jsonObject.put("text", "【" + insertUsername + "】が記事を投稿");
+                jsonObject.put("text", "【" + insertUsername + "】がナレッジを投稿");
             } else {
                 jsonObject.put("status", "updated");
-                jsonObject.put("text", "【" + updateUsername + "】が記事を更新");
+                jsonObject.put("text", "【" + updateUsername + "】がナレッジを更新");
             }
         }
 
@@ -153,26 +154,19 @@ public class WebhookLogic extends HttpLogic {
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-        UsersEntity insertUser = UsersDao.get().selectOnKey(comment.getInsertUser());
-        if (insertUser != null) {
-            jsonObject.put("insert_user", insertUser.getUserName());
-            jsonObject.put("text", "【" + insertUser.getUserName() + "】がコメント");
-        } else {
-            jsonObject.put("insert_user", "Unknown user");
-            jsonObject.put("text", "Unknown Userがコメント");
-        }
-        jsonObject.put("insert_date", simpleDateFormat.format(comment.getInsertDatetime()));
-
-        UsersEntity updateUser = UsersDao.get().selectOnKey(comment.getInsertUser());
-        if (updateUser != null) {
-            jsonObject.put("update_user", updateUser.getUserName());
-            jsonObject.put("text", "【" + updateUser.getUserName() + "】がコメント");
-        } else {
-            jsonObject.put("insert_user", "Unknown user");
-            jsonObject.put("text", "Unknown Userがコメント");
-        }
+        // 作成ユーザ情報
+        UsersEntity insertUser = UsersDao.get().selectOnKey(knowledge.getInsertUser());
+        String insertUsername = (insertUser == null) ? "unknown user" : insertUser.getUserName();
+        jsonObject.put("insert_user", insertUsername);
+        jsonObject.put("insert_date", simpleDateFormat.format(knowledge.getInsertDatetime()));
+ 
+        // 更新ユーザ情報
+        UsersEntity updateUser = UsersDao.get().selectOnKey(knowledge.getUpdateUser());
+        String updateUsername = (updateUser == null) ? "unknown user" : updateUser.getUserName();
+        jsonObject.put("update_user", updateUsername);
         jsonObject.put("update_date", simpleDateFormat.format(knowledge.getUpdateDatetime()));
 
+        jsonObject.put("text", "【" + insertUsername + "】がコメントを投稿");
         jsonObject.put("knowledge", getKnowledgeData(knowledge, null));
         return jsonObject;
     }
