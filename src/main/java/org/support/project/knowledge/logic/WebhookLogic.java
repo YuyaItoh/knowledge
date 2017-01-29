@@ -155,16 +155,16 @@ public class WebhookLogic extends HttpLogic {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
         // 作成ユーザ情報
-        UsersEntity insertUser = UsersDao.get().selectOnKey(knowledge.getInsertUser());
+        UsersEntity insertUser = UsersDao.get().selectOnKey(comment.getInsertUser());
         String insertUsername = (insertUser == null) ? "unknown user" : insertUser.getUserName();
         jsonObject.put("insert_user", insertUsername);
-        jsonObject.put("insert_date", simpleDateFormat.format(knowledge.getInsertDatetime()));
+        jsonObject.put("insert_date", simpleDateFormat.format(comment.getInsertDatetime()));
 
         // 更新ユーザ情報
-        UsersEntity updateUser = UsersDao.get().selectOnKey(knowledge.getUpdateUser());
+        UsersEntity updateUser = UsersDao.get().selectOnKey(comment.getUpdateUser());
         String updateUsername = (updateUser == null) ? "unknown user" : updateUser.getUserName();
         jsonObject.put("update_user", updateUsername);
-        jsonObject.put("update_date", simpleDateFormat.format(knowledge.getUpdateDatetime()));
+        jsonObject.put("update_date", simpleDateFormat.format(comment.getUpdateDatetime()));
 
         jsonObject.put("text", "【" + insertUsername + "】がコメントを投稿");
         jsonObject.put("knowledge", getKnowledgeData(knowledge, null));
